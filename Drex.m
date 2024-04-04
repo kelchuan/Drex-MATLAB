@@ -100,28 +100,32 @@ addpath('functions/');
 
 % keyboard
 %% User Controlled Input Parameters
+%mineral_phase=input
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Grain input parameters
 %%%%%%%%%%%%%%%%%%%%%%%%%
-Grain.nGrains   = 350;              % number of olivine crystals
+Grain.nGrains   = 300;              % number of olivine crystals
 Grain.pctOli    = 1;                % fraction of aggregate that is olivine
 %Grain.tau       = [1,2,3,1e60];     % CRSS (relative) for slip systems
-Grain.tau       = [1e60,15,1,1];     % CRSS (relative) for slip systems CPX Tian work for simple shear
+%Grain.tau       = [1e60,15,1,1];     % CRSS (relative) for slip systems CPX Tian work for simple shear
 %Grain.tau       = [1e60,6,3,2];     % CRSS (relative) for slip systems CPX Tian work for compression
-%Grain.tau       = [1e60,6,3,1];     % CRSS (relative) for slip systems CPX Tian 
+%Grain.tau       = [10,3,10,1];     % CRSS (relative) for slip systems CPX Tian  Bascou02 CRSS1
+Grain.tau       = [1,5,5,1.5];     % CRSS (relative) for slip systems CPX Tian  Bascou02 CRSS2
+
 
 %Grain.tau       = [1e60,3,10,1];     % CRSS (relative) for slip systems CPX Tian
 
 
-Grain.mob       = 125;              % grain mobility parameter (125 is recommended by Kaminski et al 2004)
-Grain.chi       = 0.3;                % 0.3 threshold volume fraction for activation of grain boundary sliding (Kaminski et al, 2004)
-Grain.lambda    = 5;                % 5 nucleation parameter
+Grain.mob       = 10%10;              % grain mobility parameter (125 is recommended by Kaminski et al 2004)
+Grain.chi       = 0;%0.3;                % 0.3 threshold volume fraction for activation of grain boundary sliding (Kaminski et al, 2004)
+Grain.lambda    = 3.2;                % 5 nucleation parameter
 Grain.stressExp = 3.5;              % stress exponent
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 % Flow input parameters
 %%%%%%%%%%%%%%%%%%%%%%%%
-Flow.tSteps = 50;
+Flow.tSteps = 100;
 %Flow.deformationSymmetry = 'Bascou_axialshortening';
 Flow.deformationSymmetry = 'simpleShear';
 %Flow.deformationSymmetry = 'axisymmetricCompression';
@@ -862,7 +866,7 @@ D = D/epsnot;
 dotacs = nan(nGrains,9);
 rt = nan(nGrains,1);
 for iGrain = 1:nGrains
-    
+
     % calculate invariants e_{pr} T_{pr} for the 4 slip systems of Ol
     % ... note that this is the function of the current orientation, acsi
     
@@ -881,11 +885,38 @@ for iGrain = 1:nGrains
     %         bigi(4) = bigi(4) + D(i1,i2)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2);
     %     end
     % end
+    % for i1 = 1:3
+    %     for i2 = 1:3
+    %         bigi(1) = bigi(1) + D(i1,i2)*iGrainAcsi(1,i1)*iGrainAcsi(2,i2);
+    %         bigi(2) = bigi(2) + D(i1,i2)*0.5*(iGrainAcsi(1,i1)+iGrainAcsi(2,i1))*(iGrainAcsi(1,i2)-iGrainAcsi(2,i2));
+    %         bigi(3) = bigi(3) + D(i1,i2)*iGrainAcsi(3,i1)*(iGrainAcsi(2,i2)+iGrainAcsi(1,i2));
+    %         bigi(4) = bigi(4) + D(i1,i2)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2);
+    %     end
+    % end
+    %% CPX crystal plane and slip direction calculation Tian 2403
+    % ref Bascou 2002 
+    % a = 9.54 A
+    % b  = 8.7 A
+    % c = 5.25 A
+    % alpha = gamma = 90 degrees;  beta = 106.06 degrees
+    %acsnsp110: rotate from n100 wrt c axis by (2pi-arctan(a/b)) [clockwise when lookng facing the axis arrow]
+    CPXa = 9.54; % length of CPX a-axis in [A]
+    CPXb  = 8.7;
+    CPXc = 5.25;
+    % !!! for rot3D input angle should be in degrees!!!!!!
+    acsnsp110 = rot3D(iGrainAcsi,iGrainAcsi(3,:),(2*pi-atan(CPXa/CPXb))*180/pi);  %(110) normal to slip plane
+
+    %acsnsp110 = rot3D(iGrainAcsi,iGrainAcsi(3,:),(-atan(CPXa/CPXb)*180/pi));  %(110) normal to slip plane
+    acsnsp11_0 = rot3D(iGrainAcsi,iGrainAcsi(3,:),atan(CPXa/CPXb)*180/pi);  %(11_0) normal to slip plane
+    acssd110 = 0.5*acsnsp110; %1/2<110> slip direction
+    %bigI = Eij*l*n   l:slip direction vector; n normal to slip plane vec;
+
     for i1 = 1:3
         for i2 = 1:3
-            bigi(1) = bigi(1) + D(i1,i2)*iGrainAcsi(1,i1)*iGrainAcsi(2,i2);
-            bigi(2) = bigi(2) + D(i1,i2)*0.5*(iGrainAcsi(1,i1)+iGrainAcsi(2,i1))*(iGrainAcsi(1,i2)-iGrainAcsi(2,i2));
-            bigi(3) = bigi(3) + D(i1,i2)*iGrainAcsi(3,i1)*(iGrainAcsi(2,i2)+iGrainAcsi(1,i2));
+            bigi(1) = bigi(1) + D(i1,i2)*iGrainAcsi(3,i1)*iGrainAcsi(2,i2);
+            %bigi(1) = bigi(1) + D(i1,i2)*iGrainAcsi(3,i1)*acsnsp11_0(1,i2);
+            bigi(2) = bigi(2) + D(i1,i2)*acssd110(1,i1)*acsnsp11_0(1,i2);
+            bigi(3) = bigi(3) + D(i1,i2)*iGrainAcsi(3,i1)*acsnsp110(1,i2);
             bigi(4) = bigi(4) + D(i1,i2)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2);
         end
     end
@@ -927,11 +958,20 @@ for iGrain = 1:nGrains
     %     end
     % end
     
+    % for i1 = 1:3
+    %     for i2 = 1:3
+    %         g(i1,i2) = 2*(gam(1)*iGrainAcsi(1,i1)*iGrainAcsi(2,i2) + ...
+			% 			  gam(2)*0.5*(iGrainAcsi(1,i1)+iGrainAcsi(2,i1))*(iGrainAcsi(1,i2)-iGrainAcsi(2,i2)) + ...
+    %                       gam(3)*iGrainAcsi(3,i1)*(iGrainAcsi(2,i2)+iGrainAcsi(1,i2)) + ...
+			% 			  gam(4)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2));
+    %     end
+    % end
+
     for i1 = 1:3
         for i2 = 1:3
-            g(i1,i2) = 2*(gam(1)*iGrainAcsi(1,i1)*iGrainAcsi(2,i2) + ...
-						  gam(2)*0.5*(iGrainAcsi(1,i1)+iGrainAcsi(2,i1))*(iGrainAcsi(1,i2)-iGrainAcsi(2,i2)) + ...
-                          gam(3)*iGrainAcsi(3,i1)*(iGrainAcsi(2,i2)+iGrainAcsi(1,i2)) + ...
+            g(i1,i2) = 2*(gam(1)*iGrainAcsi(3,i1)*iGrainAcsi(2,i2) + ...
+						  gam(2)*acssd110(1,i1)*acsnsp11_0(1,i2) + ...
+                          gam(3)*iGrainAcsi(3,i1)*acsnsp110(1,i2) + ...
 						  gam(4)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2));
         end
     end
