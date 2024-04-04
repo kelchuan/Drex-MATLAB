@@ -71,8 +71,9 @@ validatestring(method,{'Kamb','Gaussian'});
 
 % Parse input and define default values
 %... colormap options for cmapscale.m
-ColorOpts.colorRamp0 = hklcolor(256);
-ColorOpts.nTics = 3;
+%ColorOpts.colorRamp0 = hklcolor(256);
+ColorOpts.colorRamp0 = colormap(flipud(gray)); %Tian
+ColorOpts.nTics = 6%3;
 ColorOpts.centerVal = [];
 ColorOpts.factor = 0.8;
 
@@ -120,24 +121,36 @@ end
 hFig = figure(f); clf
 hFig = makepolefigures(CrystalDirections,mineral,SphereProj,hFig,ColorOpts);
 
-%% LINT: This will plot all datapoints in 3D
-% figure(3); clf
-% subplot(1,3,1)
-% scatter3(CrystalDirections{1}.unitVectors(:,1),CrystalDirections{1}.unitVectors(:,2),CrystalDirections{1}.unitVectors(:,3))
-% xlabel('x')
-% axis equal
-% 
-% subplot(1,3,2)
-% scatter3(CrystalDirections{2}.unitVectors(:,1),CrystalDirections{2}.unitVectors(:,2),CrystalDirections{2}.unitVectors(:,3))
-% xlabel('x')
-% axis equal
-% 
-% subplot(1,3,3)
-% scatter3(CrystalDirections{3}.unitVectors(:,1),CrystalDirections{3}.unitVectors(:,2),CrystalDirections{3}.unitVectors(:,3))
-% xlabel('x')
-% axis equal
+% LINT: This will plot all datapoints in 3D
+figure(3); clf
+subplot(1,3,1)
+scatter3(CrystalDirections(1).unitVectors(:,1),CrystalDirections(1).unitVectors(:,2),CrystalDirections(1).unitVectors(:,3))
+[x y] = meshgrid(-1:0.1:1); % Generate x and y data
+% A = 1;
+% B = 1;
+% C = 1;
+% D = 0;
+% z = -1/C*(A*x + B*y + D); % Solve for z data
+hold on;
+surf(x,y,zeros(size(x)),'FaceAlpha',0.3,'FaceColor','flat') %Plot the surface
+shading interp;
+xlabel('x')
+ylabel('y')
+axis equal
 
-% scatter3(CrystalDirections.data{1}.x(:),CrystalDirections.data{1}.y(:),CrystalDirections.data{1}.z(:))
+subplot(1,3,2)
+scatter3(CrystalDirections(2).unitVectors(:,1),CrystalDirections(2).unitVectors(:,2),CrystalDirections(2).unitVectors(:,3))
+xlabel('x')
+ylabel('y')
+axis equal
+
+subplot(1,3,3)
+scatter3(CrystalDirections(2).unitVectors(:,1),CrystalDirections(2).unitVectors(:,2),CrystalDirections(2).unitVectors(:,3))
+xlabel('x')
+ylabel('y')
+axis equal
+
+% scatter3(CrystalDirections.data(1).x(:),CrystalDirections.data(1).y(:),CrystalDirections.data(1).z(:))
 
 %% 
 % keyboard

@@ -55,12 +55,14 @@ switch mineral
         if exist('padarray','builtin')
             % use gcolor for slightly betterplotting
             h = gcolor(X,Y,CrystalDirections(idx).counts.*mask); shading flat
+            fprintf("yes gcolor");
         else
             % use pcolor to plot
+            fprintf("yes pcolor \n");
             h=pcolor(X,Y,mask.*CrystalDirections(idx).counts); shading interp
         end
         hold on
-        contour(X,Y,CrystalDirections(idx).counts.*mask,[2,2],'Color',[0.5,0.5,0.5],'LineWidth',2);
+        contour(X,Y,CrystalDirections(idx).counts.*mask,[2,2],'Color',[0.5,0.5,0.5],'LineWidth',3);
 
         set(gca,'YDir','normal', 'Color', 'none');
         set(h,'alphadata',~isnan(CrystalDirections(idx).counts.*mask));
@@ -70,7 +72,9 @@ switch mineral
             axis equal off
 %             hTitle = title(CrystalDirections(idx).name,'FontSize',fontSize);   
 %             hTitle.Position = [0,1.5,0];
-        hSub(idx).CLim = [minCounts,maxCounts];
+           %hSub(idx).CLim = [minCounts,maxCounts];
+           hSub(idx).CLim = [0,10]; %Tian hardwire range of plots
+            
     end
 
     % Plot the InfoBox
@@ -79,25 +83,31 @@ switch mineral
                  'visible','off','handlevisibility','off');
              
     % Colorbar
-    leftPos = 3*subaxesSpacing + 2*subaxesWidth + 0.6*subaxesWidth;
+    %leftPos = 3*subaxesSpacing + 2*subaxesWidth + 0.6*subaxesWidth;
+    leftPos = .05;
     colormap(hAxis,colorRamp0)
     hCbar = colorbar(hAxis);
 
-    cbarWidth = 0.25*subaxesWidth;
+    cbarWidth = 1.5*subaxesWidth;%0.25*subaxesWidth;
     hCbar.Location = 'northoutside'; % makes colorbar hz
-    hCbar.Position = [leftPos,0.15,cbarWidth,0.03];
-    hCbar.FontSize = 14;
-    hCbar.Title.String = 'MUD';
+    hCbar.Position = [leftPos,0.08,cbarWidth,0.05];
+    hCbar.FontSize = 10;
+    hCbar.Title.String = ['Multiples of Unity Dist' newline '(MUD)'];
     hCbar.Title.Units = 'normalized';
-    hCbar.Title.Position = [0.5,-4,0];    
+    hCbar.Title.Position = [1.26,-1,0];    
 
     set(hAxis,'CLim',[0,1])    
+    %hCbar.Ticks = tics(:,1);
+    %hCbar.TickLabels = sprintf('%3.0f\n',tics(:,2));
+    tics(:,1) %normalized 0 to 1
+    tics(:,2) % real values
     hCbar.Ticks = tics(:,1);
-    hCbar.TickLabels = sprintf('%3.0f\n',tics(:,2));
-        
+    hCbar.TickLabels = sprintf('%3.0f\n',[0,2,4,6,8,10]); %Tian hardwired to plot from 0 to 10, see above hSub(idx).CLim
+
     
     % Textbox
-    leftPos = 3*subaxesSpacing + 2*subaxesWidth;
+    %leftPos = 3*subaxesSpacing + 2*subaxesWidth;
+    leftPos = 0.86;
     nData = CrystalDirections(1).nData;
     theta = CrystalDirections(1).parameter;
   
@@ -105,7 +115,7 @@ switch mineral
     stringLimited = sprintf(['N = %i \nMax: %03.2f'],...
         nData,maxCounts);
     
-    text(leftPos,0.15,stringLimited,'parent',hAxis,'FontSize',13)
+    text(leftPos,0.1,stringLimited,'parent',hAxis,'FontSize',13)
 
     
     case 'quartz'
@@ -184,8 +194,6 @@ switch mineral
 %     hCbar.Limits = [0,1];
     hCbar.Ticks = tics(:,1);
     hCbar.TickLabels = sprintf('%3.0f\n',tics(:,2));
-    
-
     
     
     % Textbox
