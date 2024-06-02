@@ -73,7 +73,8 @@ switch mineral
 %             hTitle = title(CrystalDirections(idx).name,'FontSize',fontSize);   
 %             hTitle.Position = [0,1.5,0];
            %hSub(idx).CLim = [minCounts,maxCounts];
-           hSub(idx).CLim = [0,10]; %Tian hardwire range of plots
+           %hSub(idx).CLim = [0,10]; %Tian hardwire range of plots
+          hSub(idx).CLim = [0,5]; %Tian hardwire range of plots;  Here is what set the actual data limit
             
     end
 
@@ -96,13 +97,15 @@ switch mineral
     hCbar.Title.Units = 'normalized';
     hCbar.Title.Position = [1.26,-1,0];    
 
-    set(hAxis,'CLim',[0,1])    
+    set(hAxis,'CLim',[0,1])
+    %set(hAxis,'CLim',[0,5])    %Tian
     %hCbar.Ticks = tics(:,1);
     %hCbar.TickLabels = sprintf('%3.0f\n',tics(:,2));
     tics(:,1) %normalized 0 to 1
     tics(:,2) % real values
     hCbar.Ticks = tics(:,1);
-    hCbar.TickLabels = sprintf('%3.0f\n',[0,2,4,6,8,10]); %Tian hardwired to plot from 0 to 10, see above hSub(idx).CLim
+    %hCbar.TickLabels = sprintf('%3.0f\n',[0,2,4,6,8,10]); %Tian hardwired to plot from 0 to 10, see above hSub(idx).CLim
+    hCbar.TickLabels = sprintf('%3.0f\n',[0,1,2,3,4,5]); %Tian hardwired to plot from 0 to 10, see above hSub(idx).CLim
 
     
     % Textbox

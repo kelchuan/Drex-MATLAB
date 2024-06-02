@@ -105,31 +105,35 @@ addpath('functions/');
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Grain input parameters
 %%%%%%%%%%%%%%%%%%%%%%%%%
-Grain.nGrains   = 300;              % number of olivine crystals
+Grain.nGrains   = 300;%300;              % number of olivine crystals
 Grain.pctOli    = 1;                % fraction of aggregate that is olivine
 %Grain.tau       = [1,2,3,1e60];     % CRSS (relative) for slip systems
 %Grain.tau       = [1e60,15,1,1];     % CRSS (relative) for slip systems CPX Tian work for simple shear
 %Grain.tau       = [1e60,6,3,2];     % CRSS (relative) for slip systems CPX Tian work for compression
 %Grain.tau       = [10,3,10,1];     % CRSS (relative) for slip systems CPX Tian  Bascou02 CRSS1
 Grain.tau       = [1,5,5,1.5];     % CRSS (relative) for slip systems CPX Tian  Bascou02 CRSS2
+%Grain.tau       = [5,2,3,1];     % CRSS (relative) for slip systems CPX Tian  Bascou02 CRSS2
+
+%Grain.tau       = [1,5,3,2];     % CRSS (relative) for slip systems CPX Tian  Bascou02 CRSS2
 
 
 %Grain.tau       = [1e60,3,10,1];     % CRSS (relative) for slip systems CPX Tian
 
 
 Grain.mob       = 10%10;              % grain mobility parameter (125 is recommended by Kaminski et al 2004)
-Grain.chi       = 0;%0.3;                % 0.3 threshold volume fraction for activation of grain boundary sliding (Kaminski et al, 2004)
-Grain.lambda    = 3.2;                % 5 nucleation parameter
-Grain.stressExp = 3.5;              % stress exponent
+Grain.chi       = 0.3;%0.3;                % 0.3 threshold volume fraction for activation of grain boundary sliding (Kaminski et al, 2004)
+Grain.lambda    = 3.2;%3.2;                % 5 nucleation parameter
+Grain.stressExp = 1.5;%3.5;              % stress exponent
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 % Flow input parameters
 %%%%%%%%%%%%%%%%%%%%%%%%
 Flow.tSteps = 100;
 %Flow.deformationSymmetry = 'Bascou_axialshortening';
-Flow.deformationSymmetry = 'simpleShear';
+%Flow.deformationSymmetry = 'simpleShear';
 %Flow.deformationSymmetry = 'axisymmetricCompression';
 
+Flow.deformationSymmetry = 'triclinicShear';
 
 
 
@@ -171,7 +175,7 @@ validateattributes(Flow.deformationSymmetry, {'char'},{});
 switch Flow.deformationSymmetry
     
     case 'axisymmetricCompression' % Wk=0
-        Sz = 0.42^2;
+        Sz = .42^2;
         Sx = sqrt(1/Sz);
         Sy = Sx;
         
@@ -200,7 +204,8 @@ switch Flow.deformationSymmetry
     case 'simpleShear' % Wk =/= 0
         % shear direction is x, shear plane is xy
         
-        gammaDeg = 50;
+        gammaDeg = 50; %50;
+        %gammaDeg = 70;
         F = [1, tand(gammaDeg), 0;
              0,              1, 0;
              0               0, 1];          
@@ -210,38 +215,38 @@ switch Flow.deformationSymmetry
                
     case 'triclinicShear' % Wk =/= 0
         % shear direction is x, shear plane is xy
-        gammaHzDeg = 50;
-        gammaVtDeg = 50;
-        shortening = sqrt(0.75);        
-        
+        gammaHzDeg = 60%60 for L type and 80 for LS type
+        gammaVtDeg = 0; %50;
+        shortening = sqrt(5);%sqrt(1);%sqrt(0.75);        
+
         % shear in the x-direction normal to y
         FHzShear = [1, tand(gammaHzDeg), 0;
                     0,              1, 0;
                     0               0, 1];  
-        
+
         % shear in the z-direction, normal to y        
         FVtShear = [1, 0, 0;
                     0, 1, 0;
                     0  tand(gammaVtDeg), 1];  
-                
+
         FCoax = [1, 0, 0;        
                  0, shortening, 0;
                  0, 0, 1/shortening]; 
 
         F = FHzShear * FVtShear * FCoax;
-        
-        
+        % 
+        % 
         % This type of deformation gradient tensor gives shear vertically,
         % horiztonally, with compression. Constant volume is maintained by
         % allowing the material to slip along the boundaries (see Davis and Titus,
         % 2011, Figure 6)
-        %         v1 = F(1,2)
-        %         v2 = F(2,2)-1
-        %         v3 = 2*F(3,2)*((1+v2)/(2+v2))
-        %         F = [1,   v1, 0;
-        %              0,  1+v2, 0;
-        %              0, (v3/2)*(2+v2)/(1+v2), 1/(1+v2)];
-      
+        % v1 = F(1,2)
+        % v2 = F(2,2)-1
+        % v3 = 2*F(3,2)*((1+v2)/(2+v2))
+        % F = [1,   v1, 0;
+        %      0,  1+v2, 0;
+        %      0, (v3/2)*(2+v2)/(1+v2), 1/(1+v2)];
+
     case 'noDeformation'
         % generate uniform random distribution of euler angles
         [eulerAngles] = generaterandomLPO(Grain);
@@ -544,6 +549,8 @@ fclose(fid);
 close all
 figure(2); clf
 [hFig] = contourpolefigures(eulerAngles,'olivine','Gaussian',2);
+%[hFig] = contourpolefigures(eulerAngles,'olivine','Kamb',2);
+
 fileName = ['Output/drex_',Flow.deformationSymmetry,'_volweighted'];
 
 if exist('export_fig','file') == 2
@@ -899,13 +906,13 @@ for iGrain = 1:nGrains
     % b  = 8.7 A
     % c = 5.25 A
     % alpha = gamma = 90 degrees;  beta = 106.06 degrees
-    %acsnsp110: rotate from n100 wrt c axis by (2pi-arctan(a/b)) [clockwise when lookng facing the axis arrow]
     CPXa = 9.54; % length of CPX a-axis in [A]
     CPXb  = 8.7;
     CPXc = 5.25;
     % !!! for rot3D input angle should be in degrees!!!!!!
+    %acsnsp110: rotate from n100 wrt c axis by (2pi-arctan(a/b)) [clockwise when lookng facing the axis arrow]
     acsnsp110 = rot3D(iGrainAcsi,iGrainAcsi(3,:),(2*pi-atan(CPXa/CPXb))*180/pi);  %(110) normal to slip plane
-
+    %disp(acsnsp110)
     %acsnsp110 = rot3D(iGrainAcsi,iGrainAcsi(3,:),(-atan(CPXa/CPXb)*180/pi));  %(110) normal to slip plane
     acsnsp11_0 = rot3D(iGrainAcsi,iGrainAcsi(3,:),atan(CPXa/CPXb)*180/pi);  %(11_0) normal to slip plane
     acssd110 = 0.5*acsnsp110; %1/2<110> slip direction

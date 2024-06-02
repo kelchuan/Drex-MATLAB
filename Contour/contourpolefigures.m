@@ -73,9 +73,9 @@ validatestring(method,{'Kamb','Gaussian'});
 %... colormap options for cmapscale.m
 %ColorOpts.colorRamp0 = hklcolor(256);
 ColorOpts.colorRamp0 = colormap(flipud(gray)); %Tian
-ColorOpts.nTics = 6%3;
+ColorOpts.nTics = 6;%3;
 ColorOpts.centerVal = [];
-ColorOpts.factor = 0.8;
+ColorOpts.factor = 0;%.1;%0.8;  factor=0 means linear
 
 optArgs = {1,'upper',151,ColorOpts};
 nArgsIn = find(~cellfun(@isempty,varargin));
@@ -145,7 +145,7 @@ ylabel('y')
 axis equal
 
 subplot(1,3,3)
-scatter3(CrystalDirections(2).unitVectors(:,1),CrystalDirections(2).unitVectors(:,2),CrystalDirections(2).unitVectors(:,3))
+scatter3(CrystalDirections(3).unitVectors(:,1),CrystalDirections(3).unitVectors(:,2),CrystalDirections(3).unitVectors(:,3))
 xlabel('x')
 ylabel('y')
 axis equal
