@@ -1,4 +1,4 @@
-function [hFig] = makepolefigures(CrystalDirections,mineral,SphereProj,hFig,ColorOpts)
+function [hFig] = makepolefigures(CrystalDirections,mineral,SphereProj,hFig,ColorOpts,Shear_strain)
 
 % Parse Values common to each axis (coordinate frame)
 X = SphereProj.X;
@@ -117,9 +117,17 @@ switch mineral
     
     stringLimited = sprintf(['N = %i \nMax: %03.2f'],...
         nData,maxCounts);
-    
     text(leftPos,0.1,stringLimited,'parent',hAxis,'FontSize',13)
 
+    stringLimited = sprintf(['Shear strain = %.2f'],Shear_strain);
+    text(.02,0.9,stringLimited,'parent',hAxis,'FontSize',15)
+
+    stringLimited = sprintf('[100]')
+    text(.15,0.85,stringLimited,'parent',hAxis,'FontSize',13)
+    stringLimited = sprintf('[010]')
+    text(.48,0.85,stringLimited,'parent',hAxis,'FontSize',13)
+    stringLimited = sprintf('[001]')
+    text(.8,0.85,stringLimited,'parent',hAxis,'FontSize',13)
     
     case 'quartz'
     hFig.Position = [0,0,19,16]; % 2 column figure width is 19 cm 

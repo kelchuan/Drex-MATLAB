@@ -132,7 +132,6 @@ Flow.tSteps = 100;
 %Flow.deformationSymmetry = 'Bascou_axialshortening';
 %Flow.deformationSymmetry = 'simpleShear';
 %Flow.deformationSymmetry = 'axisymmetricCompression';
-
 Flow.deformationSymmetry = 'triclinicShear';
 
 
@@ -215,7 +214,7 @@ switch Flow.deformationSymmetry
                
     case 'triclinicShear' % Wk =/= 0
         % shear direction is x, shear plane is xy
-        gammaHzDeg = 60%60 for L type and 80 for LS type
+        gammaHzDeg = 80%60 for L type and 80 for LS type
         gammaVtDeg = 0; %50;
         shortening = sqrt(5);%sqrt(1);%sqrt(0.75);        
 
@@ -356,6 +355,7 @@ Bij = fse*fse';
 
 %... simple shear magnitude = tan(Gam) = LSij(1,3) for simple shear velocity
 ShearXYNumerical = Bij(1,2);
+Flow.shear_strain = ShearXYNumerical;
 
 %... calculate strain ratios 
 [~,eval] = eig(Bij);
@@ -548,7 +548,7 @@ fclose(fid);
 
 close all
 figure(2); clf
-[hFig] = contourpolefigures(eulerAngles,'olivine','Gaussian',2);
+[hFig] = contourpolefigures(eulerAngles,'olivine','Gaussian',Flow.shear_strain,2);
 %[hFig] = contourpolefigures(eulerAngles,'olivine','Kamb',2);
 
 fileName = ['Output/drex_',Flow.deformationSymmetry,'_volweighted'];
@@ -918,16 +918,32 @@ for iGrain = 1:nGrains
     acssd110 = 0.5*acsnsp110; %1/2<110> slip direction
     %bigI = Eij*l*n   l:slip direction vector; n normal to slip plane vec;
 
+    %more accurate way to calculate slip plane <110> normal by doing cross product
+    plane110_normal = cross((iGrainAcsi(2,:) - iGrainAcsi(1,:)),iGrainAcsi(3,:)); % (b-a) cross c
+    acsnsp110_new = plane110_normal./norm(plane110_normal);
+    plane11_0_normal = cross((iGrainAcsi(1,:) - (-iGrainAcsi(1,:))),iGrainAcsi(3,:)); % (a - (-b)) cross c
+    acsnsp11_0_new = plane11_0_normal./norm(plane11_0_normal);
+    ascsd110_new = (iGrainAcsi(2,:) + iGrainAcsi(1,:))./norm(iGrainAcsi(2,:) + iGrainAcsi(1,:));
+
+    % for i1 = 1:3
+    %     for i2 = 1:3
+    %         bigi(1) = bigi(1) + D(i1,i2)*iGrainAcsi(3,i1)*iGrainAcsi(2,i2);
+    %         %bigi(1) = bigi(1) + D(i1,i2)*iGrainAcsi(3,i1)*acsnsp11_0(1,i2);
+    %         bigi(2) = bigi(2) + D(i1,i2)*acssd110(1,i1)*acsnsp11_0(1,i2);
+    %         bigi(3) = bigi(3) + D(i1,i2)*iGrainAcsi(3,i1)*acsnsp110(1,i2);
+    %         bigi(4) = bigi(4) + D(i1,i2)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2);
+    %     end
+    % end
     for i1 = 1:3
         for i2 = 1:3
             bigi(1) = bigi(1) + D(i1,i2)*iGrainAcsi(3,i1)*iGrainAcsi(2,i2);
             %bigi(1) = bigi(1) + D(i1,i2)*iGrainAcsi(3,i1)*acsnsp11_0(1,i2);
-            bigi(2) = bigi(2) + D(i1,i2)*acssd110(1,i1)*acsnsp11_0(1,i2);
-            bigi(3) = bigi(3) + D(i1,i2)*iGrainAcsi(3,i1)*acsnsp110(1,i2);
+            bigi(2) = bigi(2) + D(i1,i2)*ascsd110_new(1,i1)*acsnsp11_0_new(1,i2);
+            bigi(3) = bigi(3) + D(i1,i2)*iGrainAcsi(3,i1)*acsnsp110_new(1,i2);
             bigi(4) = bigi(4) + D(i1,i2)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2);
         end
     end
-    
+
     % quotient, I/tau
     q = bigi./tau;
     
@@ -964,21 +980,21 @@ for iGrain = 1:nGrains
 			% 			  gam(4)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2));
     %     end
     % end
-    
+
     % for i1 = 1:3
     %     for i2 = 1:3
-    %         g(i1,i2) = 2*(gam(1)*iGrainAcsi(1,i1)*iGrainAcsi(2,i2) + ...
-			% 			  gam(2)*0.5*(iGrainAcsi(1,i1)+iGrainAcsi(2,i1))*(iGrainAcsi(1,i2)-iGrainAcsi(2,i2)) + ...
-    %                       gam(3)*iGrainAcsi(3,i1)*(iGrainAcsi(2,i2)+iGrainAcsi(1,i2)) + ...
-			% 			  gam(4)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2));
+    %         g(i1,i2) = 2*(gam(1)*iGrainAcsi(3,i1)*iGrainAcsi(2,i2) + ...
+	% 					  gam(2)*acssd110(1,i1)*acsnsp11_0(1,i2) + ...
+    %                       gam(3)*iGrainAcsi(3,i1)*acsnsp110(1,i2) + ...
+	% 					  gam(4)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2));
     %     end
     % end
 
     for i1 = 1:3
         for i2 = 1:3
             g(i1,i2) = 2*(gam(1)*iGrainAcsi(3,i1)*iGrainAcsi(2,i2) + ...
-						  gam(2)*acssd110(1,i1)*acsnsp11_0(1,i2) + ...
-                          gam(3)*iGrainAcsi(3,i1)*acsnsp110(1,i2) + ...
+						  gam(2)*ascsd110_new(1,i1)*acsnsp11_0_new(1,i2) + ...
+                          gam(3)*iGrainAcsi(3,i1)*acsnsp110_new(1,i2) + ...
 						  gam(4)*iGrainAcsi(3,i1)*iGrainAcsi(1,i2));
         end
     end
