@@ -214,7 +214,7 @@ switch Flow.deformationSymmetry
                
     case 'triclinicShear' % Wk =/= 0
         % shear direction is x, shear plane is xy
-        gammaHzDeg = 80%60 for L type and 80 for LS type
+        gammaHzDeg = 60%60 for L type and 80 for LS type
         gammaVtDeg = 0; %50;
         shortening = sqrt(5);%sqrt(1);%sqrt(0.75);        
 
@@ -222,6 +222,9 @@ switch Flow.deformationSymmetry
         FHzShear = [1, tand(gammaHzDeg), 0;
                     0,              1, 0;
                     0               0, 1];  
+        % FHzShear = [1,  0, tand(gammaHzDeg);
+        %             0,              1, 0;
+        %             0               0, 1];  
 
         % shear in the z-direction, normal to y        
         FVtShear = [1, 0, 0;
@@ -233,6 +236,8 @@ switch Flow.deformationSymmetry
                  0, 0, 1/shortening]; 
 
         F = FHzShear * FVtShear * FCoax;
+    
+        %print(F);
         % 
         % 
         % This type of deformation gradient tensor gives shear vertically,
@@ -921,7 +926,7 @@ for iGrain = 1:nGrains
     %more accurate way to calculate slip plane <110> normal by doing cross product
     plane110_normal = cross((iGrainAcsi(2,:) - iGrainAcsi(1,:)),iGrainAcsi(3,:)); % (b-a) cross c
     acsnsp110_new = plane110_normal./norm(plane110_normal);
-    plane11_0_normal = cross((iGrainAcsi(1,:) - (-iGrainAcsi(1,:))),iGrainAcsi(3,:)); % (a - (-b)) cross c
+    plane11_0_normal = cross((iGrainAcsi(1,:) - (-iGrainAcsi(2,:))),iGrainAcsi(3,:)); % (a - (-b)) cross c
     acsnsp11_0_new = plane11_0_normal./norm(plane11_0_normal);
     ascsd110_new = (iGrainAcsi(2,:) + iGrainAcsi(1,:))./norm(iGrainAcsi(2,:) + iGrainAcsi(1,:));
 
