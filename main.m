@@ -7,6 +7,85 @@ Drex()
 
 
 final_aijs = TEST_LPO.Final.directionCosines;
+nGrains = size(final_aijs,1);
+%final_aijs = TEST_LPO.Init.directionCosines;
+final_eulerAngles = orientationmatrix2euler(TEST_LPO.Final.directionCosines); 
+
+%close all
+%figure(3); %clf
+%[hFig] = contourpolefigures(final_eulerAngles,'olivine','Gaussian',Flow.shear_strain,2);
+[hFig] = contourpolefigures(final_eulerAngles,'olivine','Gaussian',28.64,3);
+%Tian this plot shows that it is plotting unweighted pole figure, different from results
+%now convert results to volume weighted
+
+% % 3. Write volume weighted euler angles, using random draws to convert odf
+% % to a discrete number of orientations, weighted by volume
+
+% %... sort by vol fraction
+% [volFracSorted, idxVolFrac] = sort(LPO.Final.volumeFraction);
+% eulerAnglesSorted = LPO.Final.eulerAngles(idxVolFrac,:);
+
+% %... generate cumulative weight
+% cumWeight = cumsum(volFracSorted);
+
+% %... generate random indices
+% % check for qrandstream (part of statistics toolbox)
+% if exist('qrandstream','file') == 2;
+%     q = qrandstream('halton', 3, 'Skip',1e3, 'Leap',1e2);
+%     idxGrain = qrand(q,Grain.nGrains);
+% else
+%     idxGrain = rand(Grain.nGrains,3);
+% end
+
+% %... find correct eulerAngle and write to file
+% fileName = ['Output/drex_',Flow.deformationSymmetry,'_volweighted.txt'];
+% fid = fopen(fileName,'w');
+% for i = 1:Grain.nGrains
+%     % find the maximum cumWeight that is less than the random value.
+%     %... the euler angle index is +1. For example, if the idxGrain(i) < cumWeight(1), the index should be 1 not zero) 
+%     cumWeightIdx = numel(cumWeight(cumWeight <= idxGrain(i)))+1;
+%     fprintf(fid,'%f %f %f\n', eulerAnglesSorted(cumWeightIdx,:)*180/pi);
+% end
+% fclose(fid);
+
+% 3. Write volume weighted euler angles, using random draws to convert odf
+% to a discrete number of orientations, weighted by volume
+%... sort by vol fraction
+[volFracSorted, idxVolFrac] = sort(TEST_LPO.Final.volumeFraction);
+eulerAnglesSorted = final_eulerAngles(idxVolFrac,:);
+
+%... generate cumulative weight
+cumWeight = cumsum(volFracSorted);
+
+%... generate random indices
+% check for qrandstream (part of statistics toolbox)
+if exist('qrandstream','file') == 2;
+    q = qrandstream('halton', 3, 'Skip',1e3, 'Leap',1e2);
+    idxGrain = qrand(q,nGrains);
+else
+    idxGrain = rand(nGrains,3);
+end
+
+%... find correct eulerAngle and write to file
+%fileName = ['Output/drex_','_volweighted_main.txt'];
+%fid = fopen(fileName,'w');
+final_eulerAngles_weighted = zeros(nGrains,3);
+for i = 1:nGrains
+    % find the maximum cumWeight that is less than the random value.
+    %... the euler angle index is +1. For example, if the idxGrain(i) < cumWeight(1), the index should be 1 not zero) 
+    cumWeightIdx = numel(cumWeight(cumWeight <= idxGrain(i)))+1;
+    %fprintf(fid,'%f %f %f\n', eulerAnglesSorted(cumWeightIdx,:)*180/pi);
+    final_eulerAngles_weighted(i,:) = eulerAnglesSorted(cumWeightIdx,:);
+end
+%fclose(fid);
+figure(4); %clf
+%[hFig] = contourpolefigures(final_eulerAngles,'olivine','Gaussian',Flow.shear_strain,2);
+[hFig] = contourpolefigures(final_eulerAngles_weighted,'olivine','Gaussian',28.64,5);
+
+%convert volume weighted eulerAngles back to direction cosines
+final_aijs = euler2orientationmatrix(final_eulerAngles_weighted); 
+
+
 [sum_aij_010,sum_aij_001,reshape_aijs,N] = LPO_indices(final_aijs);
 Mjk_010 = sum_aij_010./N;
 Mjk_001 = sum_aij_001./N;

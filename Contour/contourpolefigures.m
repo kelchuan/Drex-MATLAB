@@ -122,7 +122,7 @@ hFig = figure(f); clf
 hFig = makepolefigures(CrystalDirections,mineral,SphereProj,hFig,ColorOpts,Shear_strain);
 
 % LINT: This will plot all datapoints in 3D
-figure(3); clf
+figure(f+1); clf
 subplot(1,3,1)
 scatter3(CrystalDirections(1).unitVectors(:,1),CrystalDirections(1).unitVectors(:,2),CrystalDirections(1).unitVectors(:,3))
 [x y] = meshgrid(-1:0.1:1); % Generate x and y data
