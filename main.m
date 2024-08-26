@@ -1,4 +1,4 @@
-%base script
+%base script test
 clear all;
 close all;
 clc;
