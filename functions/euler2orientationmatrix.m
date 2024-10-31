@@ -17,9 +17,9 @@ end
 % check range of eulerAngles
 maxE = max(eulerAngles,[],1);
 minE = min(eulerAngles,[],1);
-if any(maxE > 2*pi) || any(minE < 0) || maxE(2) > pi
-    error('Expected euler angles be in range 0 < eulerAngles(:,1), eulerAngles(:,3) < 2pi and 0 < eulerAngles(:,2) < pi');
-end
+% if any(maxE > 2*pi) || any(minE < 0) || maxE(2) > pi
+%     error('Expected euler angles be in range 0 < eulerAngles(:,1), eulerAngles(:,3) < 2pi and 0 < eulerAngles(:,2) < pi');
+% end
 
 % parse inputs
 Alpha = eulerAngles(:,1); % col vecs

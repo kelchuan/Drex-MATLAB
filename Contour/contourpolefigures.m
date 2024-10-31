@@ -62,9 +62,9 @@ end
 % check range of eulerAngles
 maxE = max(eulerAngles,[],1);
 minE = min(eulerAngles,[],1);
-if any(maxE > 2*pi) || any(minE < 0) || maxE(2) > pi
-    error('Expected euler angles be in range 0 < eulerAngles(:,1), eulerAngles(:,3) < 2pi and 0 < eulerAngles(:,2) < pi');
-end
+% if any(maxE > 2*pi) || any(minE < 0) || maxE(2) > pi
+%     error('Expected euler angles be in range 0 < eulerAngles(:,1), eulerAngles(:,3) < 2pi and 0 < eulerAngles(:,2) < pi');
+% end
 
 % validate method of contouring input
 validatestring(method,{'Kamb','Gaussian'});
@@ -121,34 +121,34 @@ end
 hFig = figure(f); clf
 hFig = makepolefigures(CrystalDirections,mineral,SphereProj,hFig,ColorOpts,Shear_strain);
 
-% LINT: This will plot all datapoints in 3D
-figure(f+1); clf
-subplot(1,3,1)
-scatter3(CrystalDirections(1).unitVectors(:,1),CrystalDirections(1).unitVectors(:,2),CrystalDirections(1).unitVectors(:,3))
-[x y] = meshgrid(-1:0.1:1); % Generate x and y data
-% A = 1;
-% B = 1;
-% C = 1;
-% D = 0;
-% z = -1/C*(A*x + B*y + D); % Solve for z data
-hold on;
-surf(x,y,zeros(size(x)),'FaceAlpha',0.3,'FaceColor','flat') %Plot the surface
-shading interp;
-xlabel('x')
-ylabel('y')
-axis equal
+% % LINT: This will plot all datapoints in 3D
+% figure(f+1); clf
+% subplot(1,3,1)
+% scatter3(CrystalDirections(1).unitVectors(:,1),CrystalDirections(1).unitVectors(:,2),CrystalDirections(1).unitVectors(:,3))
+% [x y] = meshgrid(-1:0.1:1); % Generate x and y data
+% % A = 1;
+% % B = 1;
+% % C = 1;
+% % D = 0;
+% % z = -1/C*(A*x + B*y + D); % Solve for z data
+% hold on;
+% surf(x,y,zeros(size(x)),'FaceAlpha',0.3,'FaceColor','flat') %Plot the surface
+% shading interp;
+% xlabel('x')
+% ylabel('y')
+% axis equal
 
-subplot(1,3,2)
-scatter3(CrystalDirections(2).unitVectors(:,1),CrystalDirections(2).unitVectors(:,2),CrystalDirections(2).unitVectors(:,3))
-xlabel('x')
-ylabel('y')
-axis equal
+% subplot(1,3,2)
+% scatter3(CrystalDirections(2).unitVectors(:,1),CrystalDirections(2).unitVectors(:,2),CrystalDirections(2).unitVectors(:,3))
+% xlabel('x')
+% ylabel('y')
+% axis equal
 
-subplot(1,3,3)
-scatter3(CrystalDirections(3).unitVectors(:,1),CrystalDirections(3).unitVectors(:,2),CrystalDirections(3).unitVectors(:,3))
-xlabel('x')
-ylabel('y')
-axis equal
+% subplot(1,3,3)
+% scatter3(CrystalDirections(3).unitVectors(:,1),CrystalDirections(3).unitVectors(:,2),CrystalDirections(3).unitVectors(:,3))
+% xlabel('x')
+% ylabel('y')
+% axis equal
 
 % scatter3(CrystalDirections.data(1).x(:),CrystalDirections.data(1).y(:),CrystalDirections.data(1).z(:))
 
