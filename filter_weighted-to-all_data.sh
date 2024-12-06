@@ -13,14 +13,18 @@ header_size=$(du "$(ls weighted* | head -n 1)" | awk '{print $1}')
 echo "Identifying files with numerical data based on size..."
 
 # Filter files by size (larger than header size)
-valid_files=()
-for file in weighted*; do
-    file_size=$(du  "$file" | awk '{print $1}')
-    if (( file_size > header_size )); then
-        valid_files+=("$file")
-    fi
-done
+#valid_files=()
+#for file in weighted*; do
+#    file_size=$(du  "$file" | awk '{print $1}')
+#    if (( file_size > header_size )); then
+#        valid_files+=("$file")
+#    fi
+#done
+# Define the minimum valid file size (in bytes)
+min_size=$header_size
 
+# Use ls, du, and awk to filter files with a size greater than the defined minimum size
+valid_files=($(ls weighted_CPO-000* | xargs du -a | awk -v min_size=$min_size '$1 > min_size {print $2}'))
 echo "Found ${#valid_files[@]} files likely to have data. Processing..."
 
 # Loop through valid files and process them
