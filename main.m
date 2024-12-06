@@ -81,12 +81,14 @@ end
 figure(4); %clf
 %[hFig] = contourpolefigures(final_eulerAngles,'olivine','Gaussian',Flow.shear_strain,2);
 [hFig] = contourpolefigures(final_eulerAngles_weighted,'olivine','Gaussian',28.64,5);
+save('TBD_final_eulerAngles_weighted.mat', 'final_eulerAngles_weighted'); % Saves A to matrixData.mat
 
 %convert volume weighted eulerAngles back to direction cosines
-final_aijs = euler2orientationmatrix(final_eulerAngles_weighted); 
+final_aijs_volweighted = euler2orientationmatrix(final_eulerAngles_weighted); 
+save('TBD_final_aijs_volweighted.mat', 'final_aijs_volweighted'); % Saves A to matrixData.mat
 
 
-[sum_aij_010,sum_aij_001,reshape_aijs,N] = LPO_indices(final_aijs);
+[sum_aij_010,sum_aij_001,reshape_aijs,N] = LPO_indices(final_aijs_volweighted);
 Mjk_010 = sum_aij_010./N;
 Mjk_001 = sum_aij_001./N;
 

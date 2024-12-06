@@ -2,6 +2,9 @@ close all;
 clc;
 clear all;
 
+addpath '/Users/tian_bc/repos/github/Drex-MATLAB/Contour/';
+addpath '/Users/tian_bc/repos/github/Drex-MATLAB/functions/';
+
 % % load DRex LS type fabric volume weighted euler angle for comparison
 % load('TBD_final_aijs_volweighted.mat','final_aijs_volweighted');
 % load('TBD_final_eulerAngles_weighted.mat','final_eulerAngles_weighted')
@@ -80,7 +83,7 @@ rotm_origin= eul2rotm(EulerAngle,'ZXZ');
 nGrains=size(EulerAngle,1);
 rotm_rotated=zeros(3,3,nGrains);
 rotmX = rotx(-90);
-rotmZ = rotz(-53);
+rotmZ = rotz(-45);
 
 EulerAngle_rotatedX = zeros(nGrains,3);
 EulerAngle_rotatedXZ = zeros(nGrains,3);
