@@ -58,7 +58,7 @@ switch mineral
             fprintf("yes gcolor");
         else
             % use pcolor to plot
-            fprintf("yes pcolor \n");
+            %fprintf("yes pcolor \n");
             h=pcolor(X,Y,mask.*CrystalDirections(idx).counts); shading interp
         end
         hold on
@@ -86,7 +86,7 @@ switch mineral
     % Colorbar
     %leftPos = 3*subaxesSpacing + 2*subaxesWidth + 0.6*subaxesWidth;
     leftPos = .05;
-    colormap(hAxis,colorRamp0)
+    colormap(hAxis,colorRamp0);
     hCbar = colorbar(hAxis);
 
     cbarWidth = 1.5*subaxesWidth;%0.25*subaxesWidth;
@@ -101,11 +101,11 @@ switch mineral
     %set(hAxis,'CLim',[0,5])    %Tian
     %hCbar.Ticks = tics(:,1);
     %hCbar.TickLabels = sprintf('%3.0f\n',tics(:,2));
-    tics(:,1) %normalized 0 to 1
-    tics(:,2) % real values
+    tics(:,1); %normalized 0 to 1
+    tics(:,2); % real values
     hCbar.Ticks = tics(:,1);
     %hCbar.TickLabels = sprintf('%3.0f\n',[0,2,4,6,8,10]); %Tian hardwired to plot from 0 to 10, see above hSub(idx).CLim
-    hCbar.TickLabels = sprintf('%3.0f\n',[0,1,2,3,4,5]); %Tian hardwired to plot from 0 to 10, see above hSub(idx).CLim
+    %hCbar.TickLabels = sprintf('%3.0f\n',[0,1,2,3,4,5]); %Tian hardwired to plot from 0 to 10, see above hSub(idx).CLim
 
     
     % Textbox
@@ -122,11 +122,11 @@ switch mineral
     stringLimited = sprintf(['Shear strain = %.2f'],Shear_strain);
     text(.02,0.9,stringLimited,'parent',hAxis,'FontSize',15)
 
-    stringLimited = sprintf('[100]')
+    stringLimited = sprintf('[100]');
     text(.15,0.85,stringLimited,'parent',hAxis,'FontSize',13)
-    stringLimited = sprintf('[010]')
+    stringLimited = sprintf('[010]');
     text(.48,0.85,stringLimited,'parent',hAxis,'FontSize',13)
-    stringLimited = sprintf('[001]')
+    stringLimited = sprintf('[001]');
     text(.8,0.85,stringLimited,'parent',hAxis,'FontSize',13)
     
     case 'quartz'

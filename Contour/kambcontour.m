@@ -23,7 +23,7 @@ if nData*m < 150000
     cosAng = gridVectors*data';
     clear gridVectors    
     
-    fprintf(1,'Vectorized angular distance calculation for %s \n',CrystalDirections.name);
+    %fprintf(1,'Vectorized angular distance calculation for %s \n',CrystalDirections.name);
     angDist = acos(abs(cosAng)); % absolute value ensures acute angle is always returned
     clear cosAng
     

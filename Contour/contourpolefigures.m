@@ -1,4 +1,4 @@
-function [hFig] = contourpolefigures(eulerAngles,mineral,method,Shear_strain,varargin)
+function [hFig] = contourpolefigures(eulerAngles,mineral,method,Shear_strain,hFig, varargin)
 % For an input of euler angles (Bunge convention) and a mineral name
 % ('olivine' or 'quartz'), this function plots the pole figures using Kamb
 % or Gaussian contouring. The function is currently setup only for
@@ -117,10 +117,11 @@ for i = 1:nDirections
  
 end 
 
-% Make figure
-hFig = figure(f); clf
+% % Make figure
+% hFig = figure(f); cla;
+% set(hFig, 'Visible', 'off');  % Hide the figure
 hFig = makepolefigures(CrystalDirections,mineral,SphereProj,hFig,ColorOpts,Shear_strain);
-
+set(hFig, 'Visible', 'off');  % Hide the figure
 % % LINT: This will plot all datapoints in 3D
 % figure(f+1); clf
 % subplot(1,3,1)

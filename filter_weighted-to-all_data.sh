@@ -29,7 +29,7 @@ echo "Found ${#valid_files[@]} files likely to have data. Processing..."
 
 # Loop through valid files and process them
 for file in "${valid_files[@]}"; do
-    echo "Processing file: $file"
+    #echo "Processing file: $file"
     
     # Extract the time step (number between "CPO-" and ".")
     time_step=$(echo "$file" | sed -n 's/.*CPO-\([0-9]*\)\..*/\1/p')
@@ -41,7 +41,7 @@ for file in "${valid_files[@]}"; do
         }
     }' "$file" >> $output_file
 
-    echo "  Successfully processed $file."
+    #echo "  Successfully processed $file."
 done
 
 echo "Data extraction completed. All data saved to $output_file."

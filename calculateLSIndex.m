@@ -1,4 +1,4 @@
-function [LS] = calculateLSIndex(extractedData)
+function [LS] = calculateLSIndex(extractedData, fullFolderPath, particle_id, timeStep)
     % This function processes the Euler angles, applies rotations,
     % and calculates the LS index based on ASPECT output data.
     %
@@ -48,7 +48,22 @@ function [LS] = calculateLSIndex(extractedData)
     %hFig2 = contourpolefigures(EulerAngle_rotatedX, 'olivine', 'Gaussian', 28.64, 4-2, 'lower');
 
     % Plot rotated wrt X by 90 degrees and Z by 45 degrees figure
-    hFig3 = contourpolefigures(EulerAngle_rotatedXZ, 'olivine', 'Gaussian', 28.64, 5-2, 'lower');
+    % Make figure
+    hFig = figure(1); cla;
+    set(hFig, 'Visible', 'off');  % Hide the figure
+    hFig = contourpolefigures(EulerAngle_rotatedXZ, 'olivine', 'Gaussian', 28.64, hFig, 1, 'lower');
+    % Construct the filename with timeStep appended
+    fileName = sprintf('polefig_particle_%d_timeStep_%d.pdf', particle_id,timeStep);
+%    fileName = sprintf('polefig_particle_%d_timeStep_%d.jpg', particle_id,timeStep);
+
+    saveas(hFig, fullfile(fullFolderPath, fileName));
+    % Clear the figure for the next plot  So things are not keep overlaping and speed up
+    %clf; % Clears   doesn't work
+    % Close the figure
+    close(hFig); % Closes the current figure
+    %clf(hFig3);  % This should be more efficient than close
+    %cla(hFig3);  % This should be more efficient than close
+
 
     % Convert volume-weighted Euler angles back to direction cosines
     final_aijs_volweighted = euler2orientationmatrix(EulerAngle_rotatedX);
@@ -76,10 +91,10 @@ function [LS] = calculateLSIndex(extractedData)
     sumPGR001 = P001 + G001 + R001;
 
     % Output values for P, G, R
-    disp(['P010: ', num2str(P010)]);
-    disp(['P001: ', num2str(P001)]);
-    disp(['G010: ', num2str(G010)]);
-    disp(['G001: ', num2str(G001)]);
+    %disp(['P010: ', num2str(P010)]);
+    %disp(['P001: ', num2str(P001)]);
+    %disp(['G010: ', num2str(G010)]);
+    %disp(['G001: ', num2str(G001)]);
 
     % Calculate LS index
     LS = 0.5 * (2 - (P010 / (G010 + P010)) - (G001 / (G001 + P001)));

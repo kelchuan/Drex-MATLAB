@@ -37,7 +37,7 @@ if nData*m <= maxData && numel(SphereProj.x) < 3000000
     cosAng = gridVectors*Directions.unitVectors';
     clear gridVectors    
 
-    fprintf(1,'Vectorized angular distance calculation for %s \n',Directions.name);
+    %fprintf(1,'Vectorized angular distance calculation for %s \n',Directions.name);
 
     % calculate the continuous weighting function
     counts = exp(k*(abs(cosAng)-1)); % absolute value ensures acute angle is always returned
